@@ -1,23 +1,35 @@
 package com.budget.budgetTracker.service;
 
 import com.budget.budgetTracker.dto.TransactionRequestDTO;
+import com.budget.budgetTracker.entity.Budget;
 import com.budget.budgetTracker.entity.Transaction;
+import com.budget.budgetTracker.entity.TransactionType;
 import com.budget.budgetTracker.entity.User;
+import com.budget.budgetTracker.repository.BudgetRepository;
 import com.budget.budgetTracker.repository.TransactionRepository;
 import com.budget.budgetTracker.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TransactionService {
 
     private final TransactionRepository transactionRepo;
+
+    private final BudgetRepository budgetRepo;
     private final UserRepository userRepo;
 
-    public TransactionService(TransactionRepository transactionRepo, UserRepository userRepo) {
+    private final EmailService emailService;
+
+    public TransactionService(TransactionRepository transactionRepo, UserRepository userRepo, BudgetRepository budgetRepo, EmailService emailService) {
         this.transactionRepo = transactionRepo;
         this.userRepo = userRepo;
+        this.budgetRepo = budgetRepo;
+        this.emailService = emailService;
     }
 
     public Transaction createTransaction(TransactionRequestDTO requestDTO, Long userId) {
@@ -31,7 +43,33 @@ public class TransactionService {
         transaction.setCategory(requestDTO.getCategory());
         transaction.setUser(user);
 
-        return transactionRepo.save(transaction);
+        Transaction savedTransaction = transactionRepo.save(transaction);
+        LocalDateTime now = LocalDateTime.now();
+        int month = now.getMonthValue();
+        int year = now.getYear();
+
+
+        Budget budget = budgetRepo.findByUserAndMonthAndYear(user, month, year);
+        if (budget != null && !budget.isAlertSent()) {
+            BigDecimal totalSpent = transactionRepo.findByUser(user).stream()
+                    .filter(t -> t.getType() == TransactionType.EXPENSE)
+                    .filter(t -> {
+                        LocalDateTime tDate = t.getTimestamp();
+                        return tDate.getMonthValue() == month && tDate.getYear() == year;
+                    })
+                    .map(Transaction::getAmount)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            if (totalSpent.compareTo(budget.getLimitAmount()) > 0) {
+                emailService.sendBudgetExceededAlert(
+                        user.getEmail(), user.getName(), budget.getLimitAmount(), totalSpent
+                );
+                budget.setAlertSent(true);
+                budgetRepo.save(budget);
+            }
+        }
+        return savedTransaction;
     }
 
     public List<TransactionRequestDTO> getTransactionsByUser(Long userId) {
