@@ -1,0 +1,17 @@
+# Java
+/backend/target/
+*.class
+*.jar
+
+# Node
+/frontend/node_modules/
+frontend/dist/
+.vite/
+
+# IDE
+*.iml
+.idea/
+.DS_Store
+
+# OS/system
+Thumbs.db
