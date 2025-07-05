@@ -11,6 +11,7 @@ import com.budget.budgetTracker.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import com.budget.budgetTracker.entity.Transaction;
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 public class BudgetService {
@@ -19,10 +20,13 @@ public class BudgetService {
     private final UserRepository userRepo;
     private final TransactionRepository transactionRepo;
 
-    public BudgetService(BudgetRepository budgetRepo, UserRepository userRepo, TransactionRepository transactionRepo) {
+    private final EmailService emailService;
+
+    public BudgetService(BudgetRepository budgetRepo, UserRepository userRepo, TransactionRepository transactionRepo, EmailService emailService) {
         this.budgetRepo = budgetRepo;
         this.userRepo = userRepo;
         this.transactionRepo = transactionRepo;
+        this.emailService = emailService;
     }
 
     public Budget createOrUpdateBudget(Long userId, Budget budgetInput) {
@@ -33,9 +37,22 @@ public class BudgetService {
 
         if (existing != null) {
             existing.setLimitAmount(budgetInput.getLimitAmount());
+            // Fetch current total spent for that month
+            BigDecimal totalSpent = transactionRepo.findByUser(user).stream()
+                    .filter(t -> t.getType() == TransactionType.EXPENSE)
+                    .filter(t -> t.getTimestamp().getMonthValue() == budgetInput.getMonth()
+                            && t.getTimestamp().getYear() == budgetInput.getYear())
+                    .map(Transaction::getAmount)
+                    .filter(Objects::nonNull)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            // If new budget is greater than total spent, reset alert and notify
+            if (totalSpent.compareTo(budgetInput.getLimitAmount()) < 0 && existing.isAlertSent()) {
+                existing.setAlertSent(false);
+                emailService.sendBudgetUnderControl(user.getEmail(), user.getName(), budgetInput.getLimitAmount(), totalSpent);
+            }
             return budgetRepo.save(existing);
         }
-
         budgetInput.setUser(user);
         return budgetRepo.save(budgetInput);
     }

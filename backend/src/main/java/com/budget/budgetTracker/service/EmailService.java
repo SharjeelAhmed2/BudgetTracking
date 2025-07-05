@@ -33,4 +33,19 @@ public class EmailService {
             throw new RuntimeException("No email found or failed to send alert.");
         }
     }
+    public void sendBudgetUnderControl(String toEmail, String userName, BigDecimal newLimit, BigDecimal totalSpent) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(toEmail);
+            message.setSubject("Budget Back Under Control ✅");
+            message.setText(
+                    "Hello " + userName + ",\n\n" +
+                            "Your updated budget of " + newLimit + " is now above your current total spent: " + totalSpent + ".\n" +
+                            "No alerts are active at this time."
+            );
+            mailSender.send(message);
+        } catch (MailException e) {
+            throw new RuntimeException("Failed to send budget recovery alert.");
+        }
+    }
 }
