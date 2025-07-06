@@ -7,9 +7,11 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173/")
 @RequestMapping("/transactions")
 public class TransactionController {
 
@@ -34,5 +36,10 @@ public class TransactionController {
     @GetMapping("/{userId}")
     public ResponseEntity<List<TransactionRequestDTO>> getTransactionsByUser(@PathVariable Long userId) {
         return ResponseEntity.ok(transactionService.getTransactionsByUser(userId));
+    }
+    @GetMapping("/totalSpent/{userId}")
+    public ResponseEntity<BigDecimal> getTotalAmount(@PathVariable long userId)
+    {
+        return ResponseEntity.ok(transactionService.getTransactionTotal(userId));
     }
 }

@@ -1,22 +1,61 @@
 // Dashboard.tsx
-import { useEffect } from 'react';
-import { DoughnutChart } from './DoughnutChart';
+import { useEffect, useState } from 'react';
+import DoughnutChart from './doughnutChart';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function Dashboard() {
+
+    // for TotalSpent
+   const [amount, setAmount] = useState('');
+
+  const navigate = useNavigate();
   useEffect(() => {
     document.title = 'Dashboard';
   }, []);
+  const handleLogout = async () => {
+    try {
+    
+     console.log("Local Storage: ",localStorage.getItem('userId'));
+       localStorage.removeItem('userId'); // store userId for future use
+       
+      alert('Logout Successful!');
+      navigate('/login');
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  useEffect(() => {
+    const getTotalSpent = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.error("User ID not found in localStorage");
+        return;
+      }
 
+      const response = await axios.get(`http://localhost:8081/transactions/totalSpent/${userId}`);
+      const responseData = response.data;
+      console.log("User Total Spent:", responseData);
+      setAmount(responseData); // Assuming it's just a number or formatted string
+
+    } catch (err) {
+      console.error("Failed to fetch total spent:", err);
+    }
+  };
+    getTotalSpent();
+  }, []);
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navbar */}
       <nav className="flex justify-between items-center bg-white shadow px-6 py-4">
         <div className="flex items-center gap-2">
           <button className="text-2xl">&#9776;</button>
-          <span className="text-lg">navBar</span>
         </div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <button className="text-sm font-semibold text-red-600 hover:underline">Logout</button>
+        <button className="text-sm font-semibold text-red-600 hover:underline"
+        onClick={handleLogout}
+        >Logout</button>
       </nav>
 
       {/* Main Content */}
@@ -24,7 +63,7 @@ export default function Dashboard() {
         {/* Cards */}
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h2 className="text-lg font-bold">Total Spent:</h2>
-          <p className="text-2xl font-semibold text-red-500">14,070.60</p>
+          <p className="text-2xl font-semibold text-red-500">PKR {amount}</p>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h2 className="text-lg font-bold">Budget:</h2>

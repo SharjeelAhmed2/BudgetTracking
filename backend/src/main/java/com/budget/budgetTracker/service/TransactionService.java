@@ -89,4 +89,23 @@ public class TransactionService {
                 })
                 .toList();
     }
+
+    public BigDecimal getTransactionTotal(Long userId)
+    {
+        User user = userRepo.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        LocalDateTime now = LocalDateTime.now();
+        int month = now.getMonthValue();
+        int year = now.getYear();
+
+        return transactionRepo.findByUser(user).stream()
+                .filter(t -> t.getType() == TransactionType.EXPENSE)
+                .filter(t -> {
+                    LocalDateTime tDate = t.getTimestamp();
+                    return tDate.getMonthValue() == month && tDate.getYear() == year;
+                })
+                .map(Transaction::getAmount)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }
