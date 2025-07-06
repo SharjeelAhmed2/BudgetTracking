@@ -8,6 +8,7 @@
 		<version>3.5.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>com.budget</groupId>
 	<artifactId>budget</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
@@ -69,6 +70,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 	<build>

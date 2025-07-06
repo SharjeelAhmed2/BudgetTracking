@@ -1,5 +1,6 @@
 package com.budget.budgetTracker.service;
 
+import com.budget.budgetTracker.dto.UserResponseDTO;
 import com.budget.budgetTracker.entity.User;
 import com.budget.budgetTracker.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -20,23 +21,40 @@ public class UserService {
             throw new RuntimeException("Email already registered");
         }
 
-        // Set creation time
-        user.setCreatedAt(currentTimestamp());
+        System.out.println("Email: " + user.getEmail() + " " + "name" + user.getName());
+        if ((user.getEmail() != null && !user.getEmail().equalsIgnoreCase("")) &&
+                (user.getName() != null && !user.getName().equalsIgnoreCase("")))
+        {
 
-        // Optional: trim name and email to avoid whitespace weirdness
-        user.setName(user.getName() != null ? user.getName().trim() : "Unnamed User");
-        user.setEmail(user.getEmail().trim());
+            // Set creation time
+            user.setCreatedAt(currentTimestamp());
 
-        return userRepo.save(user);
+            // Optional: trim name and email to avoid whitespace weirdness
+            user.setName(user.getName() != null ? user.getName().trim() : "Unnamed User");
+            user.setEmail(user.getEmail().trim());
+
+            return userRepo.save(user);
+        }
+        else
+        {
+            throw new RuntimeException("No Email or Username provided");
+        }
     }
 
     private String currentTimestamp() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
-    @Transactional
-    public User loginUser(User user) {
-        return userRepo.findByEmail(user.getEmail())
+
+    public UserResponseDTO loginUser(User user) {
+        User existingUser = userRepo.findByEmail(user.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid email. Please register first."));
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.setId(existingUser.getId());
+        dto.setName(existingUser.getName());
+        dto.setEmail(existingUser.getEmail());
+        dto.setCreatedAt(existingUser.getCreatedAt());
+        return dto;
     }
+
 }

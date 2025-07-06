@@ -1,5 +1,6 @@
 package com.budget.budgetTracker.controller;
 
+import com.budget.budgetTracker.dto.UserResponseDTO;
 import com.budget.budgetTracker.entity.User;
 import com.budget.budgetTracker.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class UserController {
         return ResponseEntity.ok(userService.createUser(user));
     }
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody User user) {
+    public ResponseEntity<UserResponseDTO> login(@RequestBody User user) {
         return ResponseEntity.ok(userService.loginUser(user));
     }
 }

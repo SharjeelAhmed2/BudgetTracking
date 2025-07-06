@@ -10,10 +10,14 @@ export default function Register() {
 
   const handleLogin = async () => {
     try {
-      await axios.post('http://localhost:8081/users/login', {
+     const response = await axios.post('http://localhost:8081/users/login', {
         email,
       
       });
+      const user = response.data;
+      console.log("User", user);
+       localStorage.setItem('userId', user.id); // store userId for future use
+       console.log("Local Storage: ",localStorage);
       alert('Login successful!');
       navigate('/home');
     } catch (err) {
@@ -35,9 +39,9 @@ export default function Register() {
         />
         <button
           onClick={handleLogin}
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          className="w-full bg-purple-500 text-white py-2 rounded hover:bg-purple-600"
         >
-          Register
+          Login
         </button>
          <div className="pt-6">
             <p>Not a User?  <Link bg-className="bg-white p-6" to="/register">Register</Link></p>

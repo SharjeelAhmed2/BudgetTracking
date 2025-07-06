@@ -43,7 +43,7 @@ export default function Register() {
         />
         <button
           onClick={handleRegister}
-          className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+          className="w-full bg-purple-500 text-white py-2 rounded hover:bg-purple-600"
         >
           Register
         </button>
