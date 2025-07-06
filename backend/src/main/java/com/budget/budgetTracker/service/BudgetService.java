@@ -74,7 +74,7 @@ public class BudgetService {
 
         BudgetOverviewDTO dto = new BudgetOverviewDTO();
         dto.setLimit(budget.getLimitAmount());
-        dto.setTotalSpent(totalSpent);
+       // dto.setTotalSpent(totalSpent);
         dto.setStatus(totalSpent.compareTo(budget.getLimitAmount()) > 0 ? "EXCEEDED" : "OK");
 
         return dto;
