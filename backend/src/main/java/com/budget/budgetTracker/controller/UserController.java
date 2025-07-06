@@ -6,7 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/signup")
+@CrossOrigin(origins = "http://localhost:5173/")
+@RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
@@ -15,8 +16,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
+    @PostMapping("/signup")
     public ResponseEntity<User> signUp(@RequestBody User user) {
         return ResponseEntity.ok(userService.createUser(user));
+    }
+    @PostMapping("/login")
+    public ResponseEntity<User> login(@RequestBody User user) {
+        return ResponseEntity.ok(userService.loginUser(user));
     }
 }

@@ -33,4 +33,10 @@ public class UserService {
     private String currentTimestamp() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
+
+    @Transactional
+    public User loginUser(User user) {
+        return userRepo.findByEmail(user.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email. Please register first."));
+    }
 }
