@@ -1,10 +1,16 @@
 // src/pages/Register.tsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Register() {
-
+  useEffect(() => {
+    if(localStorage.getItem('userId'))
+    {
+    localStorage.removeItem('userId');
+    alert("You're back to Login. ID removed");
+    }
+  }, []);
   const [email, setemail] = useState('');
   const navigate = useNavigate();
 
