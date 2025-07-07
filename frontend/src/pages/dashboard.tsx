@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import DoughnutChart from './doughnutChart';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Sidebar from './components/sidebar'
 
 export default function Dashboard() {
+const [isSidebarOpen, setSidebarOpen] = useState(false);
 
     // for TotalSpent
    const [amount, setAmount] = useState('');
@@ -80,7 +82,12 @@ export default function Dashboard() {
       {/* Navbar */}
       <nav className="flex justify-between items-center bg-white shadow px-6 py-4">
         <div className="flex items-center gap-2">
-          <button className="text-2xl">&#9776;</button>
+                   <button
+            className="text-2xl"
+            onClick={() => setSidebarOpen(true)}
+          >
+            &#9776;
+          </button>
         </div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <button className="text-sm font-semibold text-red-600 hover:underline"
@@ -105,6 +112,8 @@ export default function Dashboard() {
           <DoughnutChart />
         </div>
       </main>
+       {/* Sidebar */}
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
     </div>
   );
 }
