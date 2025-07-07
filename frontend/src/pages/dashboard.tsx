@@ -18,18 +18,10 @@ const [isSidebarOpen, setSidebarOpen] = useState(false);
   useEffect(() => {
     document.title = 'Dashboard';
   }, []);
-  const handleLogout = async () => {
-    try {
-    
-     console.log("Local Storage: ",localStorage.getItem('userId'));
-       localStorage.removeItem('userId'); // store userId for future use
-       
-      alert('Logout Successful!');
-      navigate('/login');
-    } catch (err) {
-      console.error(err);
+  const goToHome = async () => {
+      navigate('/home');
     }
-  };
+  
   useEffect(() => {
     const getTotalSpent = async () => {
     try {
@@ -90,9 +82,9 @@ const [isSidebarOpen, setSidebarOpen] = useState(false);
           </button>
         </div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <button className="text-sm font-semibold text-red-600 hover:underline"
-        onClick={handleLogout}
-        >Logout</button>
+               <p className="text-1xl font-bold"
+       
+        >Budget Tracker</p>
       </nav>
 
       {/* Main Content */}
