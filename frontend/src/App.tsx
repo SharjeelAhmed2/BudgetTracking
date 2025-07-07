@@ -3,6 +3,7 @@ import Register from './pages/register'
 import Login from './pages/login';
 import Home from './pages/dashboard';
 import TableTransaction from './pages/components/tableTransaction';
+import CreateTransaction from './pages/components/createTransaction';
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
         <Route path="/login" element={<Login />} /> 
         <Route path="/home" element={<Home />} />
         <Route path="/tableTransaction" element={<TableTransaction />} />
+        <Route path="/createTransaction" element={<CreateTransaction/>} />
       </Routes>
     </Router>
   );

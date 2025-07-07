@@ -36,7 +36,8 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         </button>
       </div>
       <ul className="p-4 space-y-4 font-semibold">
-        <li><a href="#">Add Transaction</a></li>
+        <li><Link bg-className="bg-white p-6" to="/createTransaction">Add Transaction</Link></li>
+
         <li><a href="#">Add Budget</a></li>
         <li><Link bg-className="bg-white p-6" to="/tableTransaction">View All Transactions</Link></li>
         <li>        <button className="text-sm font-semibold text-red-600 hover:underline"
