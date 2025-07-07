@@ -51,10 +51,10 @@ export default function TableTransaction() {
         <table className="min-w-full border border-gray-300">
           <thead>
             <tr className="bg-gray-200">
-              <th className="py-2 px-4 border">Title</th>
-              <th className="py-2 px-4 border">Amount</th>
-              <th className="py-2 px-4 border">Type</th>
-              <th className="py-2 px-4 border">Category</th>
+              <th className="py-2 px-4 border w-1/5">Title</th>
+              <th className="py-2 px-4 border w-1/5">Amount</th>
+              <th className="py-2 px-4 border w-1/5">Type</th>
+              <th className="py-2 px-4 border w-1/5">Category</th>
               {/* <th className="py-2 px-4 border">Timestamp</th> */}
             </tr>
           </thead>
@@ -62,10 +62,10 @@ export default function TableTransaction() {
             {transactions.length > 0 ? (
               transactions.map((tx: any, index) => (
                 <tr key={index} className="text-center">
-                  <td className="py-2 px-4 border">{tx.title}</td>
-                  <td className="py-2 px-4 border">{tx.amount}</td>
-                  <td className="py-2 px-4 border">{tx.type}</td>
-                  <td className="py-2 px-4 border">{tx.category}</td>
+                  <td className="py-2 px-4 border w-1/5">{tx.title}</td>
+                  <td className="py-2 px-4 border w-1/5">{tx.amount}</td>
+                  <td className="py-2 px-4 border w-1/5">{tx.type}</td>
+                  <td className="py-2 px-4 border w-1/5">{tx.category}</td>
                   {/* <td className="py-2 px-4 border">{new Date(tx.timestamp).toLocaleString()}</td> */}
                 </tr>
               ))
