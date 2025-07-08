@@ -14,6 +14,7 @@ export default function Register() {
   }, []);
   const [email, setemail] = useState('');
   const [name, setname] = useState('');
+  const [amount, setAmount] = useState('');
   const navigate = useNavigate();
 
   const handleRegister = async () => {
@@ -21,6 +22,7 @@ export default function Register() {
       await axios.post('http://localhost:8081/users/signup', {
         email,
         name,
+        totalBalance: amount
       });
       alert('Registration successful!');
       navigate('/login');
@@ -46,6 +48,13 @@ export default function Register() {
           placeholder="name"
           value={name}
           onChange={(e) => setname(e.target.value)}
+          className="w-full mb-4 px-3 py-2 border rounded"
+        />
+        <input
+          type="number"
+          placeholder="amount"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
           className="w-full mb-4 px-3 py-2 border rounded"
         />
         <button

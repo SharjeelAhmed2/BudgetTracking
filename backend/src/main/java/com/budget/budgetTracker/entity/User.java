@@ -3,6 +3,7 @@ package com.budget.budgetTracker.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,8 +21,18 @@ public class User {
 
     private String name;
 
+    public BigDecimal getTotalBalance() {
+        return totalBalance;
+    }
+
+    public void setTotalBalance(BigDecimal totalBalance) {
+        this.totalBalance = totalBalance;
+    }
+
     @Column(unique = true, nullable = false)
     private String email;
+
+    private BigDecimal totalBalance;
 
     public String getCreatedAt() {
         return createdAt;

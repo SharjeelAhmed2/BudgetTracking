@@ -32,7 +32,7 @@ public class UserService {
             // Optional: trim name and email to avoid whitespace weirdness
             user.setName(user.getName() != null ? user.getName().trim() : "Unnamed User");
             user.setEmail(user.getEmail().trim());
-
+            user.setTotalBalance(user.getTotalBalance());
             return userRepo.save(user);
         }
         else
