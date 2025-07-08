@@ -43,12 +43,28 @@ public class TransactionService {
         transaction.setCategory(requestDTO.getCategory());
         transaction.setUser(user);
 
+        // Make Changes to Total Balance
+        BigDecimal transactionAmount = transaction.getAmount();
+        BigDecimal totalBalance = user.getTotalBalance();
+        BigDecimal totalAfterTransaction = BigDecimal.valueOf(0);
+        if (transaction.getType() == TransactionType.INCOME) {
+            totalAfterTransaction = totalBalance.add(transactionAmount);
+        }
+        else if(transaction.getType() == TransactionType.EXPENSE)
+        {
+            totalAfterTransaction = totalBalance.subtract(transactionAmount);
+        }
+        user.setTotalBalance(totalAfterTransaction);
+        userRepo.save(user);
+
+        // Save Transaction
         Transaction savedTransaction = transactionRepo.save(transaction);
         LocalDateTime now = LocalDateTime.now();
         int month = now.getMonthValue();
         int year = now.getYear();
 
 
+        // Budget Exceed Alert Send
         Budget budget = budgetRepo.findByUserAndMonthAndYear(user, month, year);
         if (budget != null && !budget.isAlertSent()) {
             BigDecimal totalSpent = transactionRepo.findByUser(user).stream()
