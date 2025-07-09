@@ -1,7 +1,6 @@
 // Dashboard.tsx
 import { useEffect, useState } from 'react';
 import DoughnutChart from './doughnutChart';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Sidebar from './components/sidebar'
 
@@ -11,21 +10,28 @@ const [isSidebarOpen, setSidebarOpen] = useState(false);
     // for TotalSpent
    const [amount, setAmount] = useState('');
    const [budget, setBudget] = useState('');
+   const [totalBalance, setTotalBalance]  =  useState<string | null>(null);
+   const [amountLastTransaction, setAmountLastTransaction] = useState('');
+   const [category, setCategory] = useState('');
+
   const today = new Date();
   const month = today.getMonth() + 1; // Returns 0-11 (0 for January, 11 for December)
   const year = today.getFullYear(); // Returns 1-31
-  const navigate = useNavigate();
+
   useEffect(() => {
     document.title = 'Dashboard';
   }, []);
-  const goToHome = async () => {
-      navigate('/home');
-    }
-  
+
+  useEffect(() => {
+    const totalBalance1: string | null = localStorage.getItem('totalBalance');
+    setTotalBalance(totalBalance1);
+  }, []);
+
   useEffect(() => {
     const getTotalSpent = async () => {
     try {
       const userId = localStorage.getItem('userId');
+      
       if (!userId) {
         console.error("User ID not found in localStorage");
         return;
@@ -69,6 +75,35 @@ const [isSidebarOpen, setSidebarOpen] = useState(false);
   };
     getBudget();
   }, []);
+
+    useEffect(() => {
+    const transactionData = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        console.error("User ID not found in localStorage");
+        return;
+      }
+      const response = await axios.get(`http://localhost:8081/transactions/${userId}`);
+       let responseData = response.data;
+      // for(let responses in responseData)
+      // {
+      //   responses.slice(-1)[0].;
+      //   responseData = responses;
+      // }
+      // console.log("Last Object Response", responseData)
+     // console.log("Tolal Transaction", responseData);
+     const lastTransaction = responseData[responseData.length - 1];
+      setAmountLastTransaction(lastTransaction.amount);
+      setCategory(lastTransaction.type.toLowerCase());
+     // setAmount(responseData); // Assuming it's just a number or formatted string
+
+    } catch (err) {
+      console.error("Failed to fetch total spent:", err);
+    }
+  };
+    transactionData();
+  }, []);
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Navbar */}
@@ -92,16 +127,24 @@ const [isSidebarOpen, setSidebarOpen] = useState(false);
         {/* Cards */}
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h2 className="text-lg font-bold">Total Spent:</h2>
-          <p className="text-2xl font-semibold text-red-500">PKR {amount}</p>
+          <p className="text-1xl font-semibold text-red-500">PKR {amount}</p>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h2 className="text-lg font-bold">Budget:</h2>
-          <p className="text-2xl font-semibold text-green-600">PKR {budget}</p>
+          <p className="text-1xl font-semibold text-green-600">PKR {budget}</p>
         </div>
-
         {/* Chart or Additional Cards */}
         <div className="bg-white p-6 rounded-xl shadow-md col-span-1 md:col-span-2 flex justify-center">
           <DoughnutChart />
+        </div>
+        <div className="bg-white p-6 rounded-xl shadow-md">
+          <h2 className="text-lg font-bold">Total Balance:</h2>
+          <p className="text-1xl font-semibold text-blue-600">PKR {totalBalance}</p>
+        </div>
+          <div className="bg-white p-6 rounded-xl shadow-md">
+          <h2 className="text-lg font-bold">Your Last Transaction:</h2>
+          <p className="text-1xl font-semibold text-yellow-500">Amount in PKR: {amountLastTransaction}</p>
+          <p className="text-1xl font-semibold text-purple-500">Type: {category}</p>
         </div>
       </main>
        {/* Sidebar */}

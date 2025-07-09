@@ -5,7 +5,15 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-
+const options = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      position: 'bottom' as const,
+    },
+  },
+};
 
 
 export default function DoughnutChart() {
@@ -60,7 +68,7 @@ export default function DoughnutChart() {
       {chartData ? (
         console.log("charData: ", chartData.datasets),
         chartData.labels.length !== 0 ? (
-        <Doughnut data={chartData}  />
+        <Doughnut data={chartData} options={options}  />
         ) : (
             <p>User Has No Transactions</p>
         )

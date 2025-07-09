@@ -54,6 +54,7 @@ public class UserService {
         dto.setName(existingUser.getName());
         dto.setEmail(existingUser.getEmail());
         dto.setCreatedAt(existingUser.getCreatedAt());
+        dto.setTotalBalance(existingUser.getTotalBalance());
         return dto;
     }
 

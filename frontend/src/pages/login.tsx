@@ -23,7 +23,8 @@ export default function Register() {
       const user = response.data;
       console.log("User", user);
        localStorage.setItem('userId', user.id);
-       localStorage.setItem('name', user.name); // store userId for future use
+       localStorage.setItem('name', user.name);
+       localStorage.setItem('totalBalance', user.totalBalance);
        console.log("Local Storage: ",localStorage);
       alert('Login successful!');
       navigate('/home');

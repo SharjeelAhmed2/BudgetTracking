@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter
@@ -13,9 +14,18 @@ import java.time.LocalDateTime;
 public class UserResponseDTO {
     private Long id;
     private String name;
-    private String email;
-    private String createdAt; // assuming you're now using String
 
+    public BigDecimal getTotalBalance() {
+        return totalBalance;
+    }
+
+    public void setTotalBalance(BigDecimal totalBalance) {
+        this.totalBalance = totalBalance;
+    }
+
+    private String email;
+    private String createdAt;
+    public BigDecimal totalBalance;
     public UserResponseDTO() {
 
     }
@@ -28,6 +38,7 @@ public class UserResponseDTO {
     public void setName(String name) {
         this.name = name;
     }
+
 
     public Long getId() {
         return id;
@@ -44,6 +55,8 @@ public class UserResponseDTO {
     public String getCreatedAt() {
         return createdAt;
     }
+
+
 
     public void setEmail(String email) {
         this.email = email;
