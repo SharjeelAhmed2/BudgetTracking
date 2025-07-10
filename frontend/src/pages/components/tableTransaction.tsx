@@ -4,6 +4,15 @@ import Sidebar from './sidebar';
 import { useNavigate } from 'react-router-dom';
 
 export default function TableTransaction() {
+
+  // Pagination 
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+ 
+
   const [transactions, setTransactions] = useState([]);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
@@ -23,14 +32,14 @@ export default function TableTransaction() {
       console.log("Tolal Transaction", responseData);
       setTransactions(response.data);
      // setAmount(responseData); // Assuming it's just a number or formatted string
-
     } catch (err) {
       console.error("Failed to fetch total spent:", err);
     }
   };
     transactionData();
   }, []);
-
+     const currentItems = transactions.slice(indexOfFirstItem, indexOfLastItem);
+      const totalPages = Math.ceil(transactions.length / itemsPerPage);
   return (
     <>
       <nav className="flex justify-between items-center bg-white shadow px-6 py-4">
@@ -48,25 +57,23 @@ export default function TableTransaction() {
         >Go to Dashboard</button>
       </nav>
       <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-300">
+        <table className="min-w-full border border-red-300">
           <thead>
-            <tr className="bg-gray-200">
-              <th className="py-2 px-4 border w-1/5">Title</th>
-              <th className="py-2 px-4 border w-1/5">Amount</th>
-              <th className="py-2 px-4 border w-1/5">Type</th>
-              <th className="py-2 px-4 border w-1/5">Category</th>
-              {/* <th className="py-2 px-4 border">Timestamp</th> */}
+            <tr className="bg-red-500">
+              <th className="py-2 px-4 border text-white w-1/5">Title</th>
+              <th className="py-2 px-4 border text-white  w-1/5">Amount</th>
+              <th className="py-2 px-4 border text-white  w-1/5">Type</th>
+              <th className="py-2 px-4 border text-white  w-1/5">Category</th>
             </tr>
           </thead>
           <tbody>
-            {transactions.length > 0 ? (
-              transactions.map((tx: any, index) => (
+            {currentItems.length > 0 ? (
+              currentItems.map((tx: any, index) => (
                 <tr key={index} className="text-center">
                   <td className="py-2 px-4 border w-1/5">{tx.title}</td>
                   <td className="py-2 px-4 border w-1/5">{tx.amount}</td>
                   <td className="py-2 px-4 border w-1/5">{tx.type}</td>
                   <td className="py-2 px-4 border w-1/5">{tx.category}</td>
-                  {/* <td className="py-2 px-4 border">{new Date(tx.timestamp).toLocaleString()}</td> */}
                 </tr>
               ))
             ) : (
@@ -78,6 +85,21 @@ export default function TableTransaction() {
             )}
           </tbody>
         </table>
+                  <div className="flex justify-center mt-4 space-x-2">
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={` px-3 py-1 border rounded ${
+                  currentPage === i + 1
+                    ? 'bg-red-500 text-white '
+                    : 'bg-white text-red-500 border-red-300'
+                }`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
         <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
       </div>
     </>
