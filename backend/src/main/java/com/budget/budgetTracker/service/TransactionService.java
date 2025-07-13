@@ -25,11 +25,13 @@ public class TransactionService {
 
     private final EmailService emailService;
 
-    public TransactionService(TransactionRepository transactionRepo, UserRepository userRepo, BudgetRepository budgetRepo, EmailService emailService) {
+    private final SpendingSummaryService summaryService;
+    public TransactionService(TransactionRepository transactionRepo, UserRepository userRepo, BudgetRepository budgetRepo, EmailService emailService, SpendingSummaryService summaryService) {
         this.transactionRepo = transactionRepo;
         this.userRepo = userRepo;
         this.budgetRepo = budgetRepo;
         this.emailService = emailService;
+        this.summaryService = summaryService;
     }
 
     public Transaction createTransaction(TransactionRequestDTO requestDTO, Long userId) {
@@ -58,10 +60,11 @@ public class TransactionService {
         }
         // Save Transaction
         Transaction savedTransaction = transactionRepo.save(transaction);
+
         LocalDateTime now = LocalDateTime.now();
         int month = now.getMonthValue();
         int year = now.getYear();
-
+        summaryService.markSummaryStale(userId, month,year);
 
         // Budget Exceed Alert Send
         Budget budget = budgetRepo.findByUserAndMonthAndYear(user, month, year);

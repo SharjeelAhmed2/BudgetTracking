@@ -43,6 +43,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <li>        <button className="text-sm font-semibold text-red-600 hover:underline"
         onClick={handleLogout}
         >Logout</button></li>
+        <li><Link bg-className="bg-white p-6" to="/generateSummary">Generate Summary</Link></li>
       </ul>
     </div>
   );

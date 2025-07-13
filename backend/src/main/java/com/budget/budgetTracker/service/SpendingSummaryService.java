@@ -1,14 +1,17 @@
 package com.budget.budgetTracker.service;
 
 import com.budget.budgetTracker.dto.SpendingSummaryDTO;
+import com.budget.budgetTracker.entity.OpenAISummary;
 import com.budget.budgetTracker.entity.Transaction;
 import com.budget.budgetTracker.entity.TransactionType;
+import com.budget.budgetTracker.repository.OpenAISummaryRepository;
 import com.budget.budgetTracker.repository.TransactionRepository;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +23,20 @@ public class SpendingSummaryService {
     private final TransactionRepository txRepo;
     private final OpenAiChatModel chatClient;
 
+    private final OpenAISummaryRepository summaryRepo;
     public SpendingSummaryService(TransactionRepository txRepo,
-                                  OpenAiChatModel chatClient) {
+                                  OpenAiChatModel chatClient, OpenAISummaryRepository summaryRepo) {
         this.txRepo = txRepo;
         this.chatClient = chatClient;
+        this.summaryRepo = summaryRepo;
     }
 
     public SpendingSummaryDTO summarize(Long userId, int month, int year) {
+        var cached = summaryRepo.findTopByUserIdAndMonthAndYearOrderByIdDesc(userId, month, year);
+        if (cached.isPresent() && !cached.get().isStale()) {
+            return new SpendingSummaryDTO(cached.get().getSummary());
+        }
+
         YearMonth ym = YearMonth.of(year, month);
 
         List<Transaction> expenses = txRepo.findByUserIdAndType(userId, TransactionType.EXPENSE)
@@ -59,11 +69,29 @@ public class SpendingSummaryService {
         prompt.append("Total: ").append(total).append("\n");
         byCat.forEach((k, v) -> prompt.append(k).append(": ").append(v).append("\n"));
 
-        var response = chatClient.call(new Prompt(prompt.toString()))
+        String generatedSummary = chatClient.call(new Prompt(prompt.toString()))
                 .getResult()
                 .getOutput()
                 .getText();
 
-        return new SpendingSummaryDTO(response.trim());
+        // Save to DB
+        OpenAISummary aiSummary = new OpenAISummary();
+        aiSummary.setUserId(userId);
+        aiSummary.setSummary(generatedSummary.trim());
+        aiSummary.setMonth(month);
+        aiSummary.setYear(year);
+        aiSummary.setCreatedAt(LocalDateTime.now());
+
+        summaryRepo.save(aiSummary);
+
+
+        return new SpendingSummaryDTO(generatedSummary.trim());
+    }
+    public void markSummaryStale(Long userId, int month, int year) {
+        summaryRepo.findTopByUserIdAndMonthAndYearOrderByIdDesc(userId, month, year)
+                .ifPresent(s -> {
+                    s.setStale(true);
+                    summaryRepo.save(s);
+                });
     }
 }
