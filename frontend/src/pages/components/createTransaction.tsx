@@ -32,7 +32,7 @@ export default function CreateTransaction() {
       navigate('/tableTransaction');
     } catch (err) {
       console.error(err);
-      alert('Registration failed');
+      alert('Failed to add Transaction');
     }
   };
 

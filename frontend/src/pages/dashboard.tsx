@@ -24,7 +24,11 @@ const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const totalBalance1: string | null = localStorage.getItem('totalBalance');
+    if(totalBalance1 !== null)
+    {
     setTotalBalance(totalBalance1);
+    }
+    
   }, []);
 
   useEffect(() => {
@@ -93,11 +97,13 @@ const [isSidebarOpen, setSidebarOpen] = useState(false);
       // }
       // console.log("Last Object Response", responseData)
      // console.log("Tolal Transaction", responseData);
+     if(responseData >0)
+     {
      const lastTransaction = responseData[responseData.length - 1];
-      setAmountLastTransaction(lastTransaction.amount);
+      setAmountLastTransaction(lastTransaction.amount ? lastTransaction.amount : 0);
       setCategory(lastTransaction.type.toLowerCase());
      // setAmount(responseData); // Assuming it's just a number or formatted string
-
+     }
     } catch (err) {
       console.error("Failed to fetch total spent:", err);
     }
@@ -139,7 +145,7 @@ const [isSidebarOpen, setSidebarOpen] = useState(false);
         </div>
         <div className="bg-white p-6 rounded-xl shadow-md">
           <h2 className="text-lg font-bold">Total Balance:</h2>
-          <p className="text-1xl font-semibold text-blue-600">PKR {totalBalance}</p>
+          <p className="text-1xl font-semibold text-blue-600">PKR {totalBalance !==null ? totalBalance: 0}</p>
         </div>
           <div className="bg-white p-6 rounded-xl shadow-md">
           <h2 className="text-lg font-bold">Your Last Transaction:</h2>
