@@ -11,6 +11,7 @@ import com.budget.budgetTracker.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import com.budget.budgetTracker.entity.Transaction;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Service
@@ -21,12 +22,13 @@ public class BudgetService {
     private final TransactionRepository transactionRepo;
 
     private final EmailService emailService;
-
-    public BudgetService(BudgetRepository budgetRepo, UserRepository userRepo, TransactionRepository transactionRepo, EmailService emailService) {
+    private final SpendingSummaryService summaryService;
+    public BudgetService(BudgetRepository budgetRepo, UserRepository userRepo, TransactionRepository transactionRepo, EmailService emailService, SpendingSummaryService summaryService) {
         this.budgetRepo = budgetRepo;
         this.userRepo = userRepo;
         this.transactionRepo = transactionRepo;
         this.emailService = emailService;
+        this.summaryService = summaryService;
     }
 
     public Budget createOrUpdateBudget(Long userId, Budget budgetInput) {
@@ -34,7 +36,9 @@ public class BudgetService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Budget existing = budgetRepo.findByUserAndMonthAndYear(user, budgetInput.getMonth(), budgetInput.getYear());
-
+        LocalDateTime now = LocalDateTime.now();
+        int month = now.getMonthValue();
+        int year = now.getYear();
         if (existing != null) {
             existing.setLimitAmount(budgetInput.getLimitAmount());
             // Fetch current total spent for that month
@@ -51,8 +55,11 @@ public class BudgetService {
                 existing.setAlertSent(false);
                 emailService.sendBudgetUnderControl(user.getEmail(), user.getName(), budgetInput.getLimitAmount(), totalSpent);
             }
+
+            summaryService.makeAdivceState(userId, month,year);
             return budgetRepo.save(existing);
         }
+        summaryService.makeAdivceState(userId, month,year);
         budgetInput.setUser(user);
         return budgetRepo.save(budgetInput);
     }

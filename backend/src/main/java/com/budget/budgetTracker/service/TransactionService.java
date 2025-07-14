@@ -65,7 +65,7 @@ public class TransactionService {
         int month = now.getMonthValue();
         int year = now.getYear();
         summaryService.markSummaryStale(userId, month,year);
-
+        summaryService.suggestBudget(userId, month,year);
         // Budget Exceed Alert Send
         Budget budget = budgetRepo.findByUserAndMonthAndYear(user, month, year);
         if (budget != null && !budget.isAlertSent()) {
