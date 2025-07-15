@@ -11,7 +11,7 @@ export default function CreateTransaction() {
     const [title, setTitle] = useState('');
     const [amount, setAmount] = useState('');
     const [type, setType] = useState('');
-    const [category, setCategory] = useState('');
+    //const [category, setCategory] = useState('');
 
     const navigate = useNavigate();
 
@@ -25,8 +25,8 @@ export default function CreateTransaction() {
       await axios.post(`http://localhost:8081/transactions/${userId}`, {
         title,
         amount,
-        type,
-        category,
+        type
+     
       });
       alert('Transaction Added');
       navigate('/tableTransaction');
@@ -81,20 +81,6 @@ export default function CreateTransaction() {
         <option value="">Select a Type</option>
         <option value="INCOME">INCOME</option>
         <option value="EXPENSE">EXPENSE</option>
-        </select>
-       <select
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        className="w-full mb-4 px-3 py-2 border rounded"
-        >
-        <option value="">Select a Category</option>
-        <option value="FOOD">FOOD</option>
-        <option value="TRAVEL">TRAVEL</option>
-        <option value="SUBSCRIPTIONS">SUBSCRIPTIONS</option>
-        <option value="RETAIL">RETAIL</option>
-        <option value="UTILITIES">UTILITIES</option>
-        <option value="ENTERTAINMENT">ENTERTAINMENT</option>
-        <option value="OTHER">OTHER</option>
         </select>
         <button
           onClick={addTransaction}
