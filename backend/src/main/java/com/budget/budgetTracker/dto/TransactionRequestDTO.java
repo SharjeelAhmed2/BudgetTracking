@@ -20,8 +20,8 @@ public class TransactionRequestDTO {
     @NotNull(message = "Transaction type is required")
     private TransactionType type;
 
-    @NotNull(message = "Category is required")
-    private CategoryType category;
+
+    private String category;
 
     // Getters and setters
 
@@ -41,6 +41,14 @@ public class TransactionRequestDTO {
         this.amount = amount;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     public TransactionType getType() {
         return type;
     }
@@ -49,11 +57,5 @@ public class TransactionRequestDTO {
         this.type = type;
     }
 
-    public CategoryType getCategory() {
-        return category;
-    }
 
-    public void setCategory(CategoryType category) {
-        this.category = category;
-    }
 }

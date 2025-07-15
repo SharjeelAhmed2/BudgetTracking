@@ -53,14 +53,6 @@ public class Transaction {
         this.timestamp = timestamp;
     }
 
-    public CategoryType getCategory() {
-        return category;
-    }
-
-    public void setCategory(CategoryType category) {
-        this.category = category;
-    }
-
     public User getUser() {
         return user;
     }
@@ -71,15 +63,28 @@ public class Transaction {
 
     private BigDecimal amount;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
     @Enumerated(EnumType.STRING)
     private TransactionType type; // INCOME or EXPENSE
 
     private LocalDateTime timestamp;
 
-
-
-    @Enumerated(EnumType.STRING)
-    private CategoryType category;
+    private String category;
 
 
     @ManyToOne

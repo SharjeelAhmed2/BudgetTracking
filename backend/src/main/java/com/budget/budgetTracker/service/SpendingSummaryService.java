@@ -60,7 +60,7 @@ public class SpendingSummaryService {
         // group by category
         Map<String, BigDecimal> byCat = expenses.stream()
                 .collect(Collectors.groupingBy(
-                        t -> t.getCategory().name(),
+                        Transaction::getCategory,
                         Collectors.mapping(Transaction::getAmount,
                                 Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)))
                 );
@@ -124,7 +124,7 @@ public class SpendingSummaryService {
         // group by category
         Map<String, BigDecimal> byCat = expenses.stream()
                 .collect(Collectors.groupingBy(
-                        t -> t.getCategory().name(),
+                        Transaction::getCategory,
                         Collectors.mapping(Transaction::getAmount,
                                 Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)))
                 );

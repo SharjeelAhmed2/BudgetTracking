@@ -1,23 +1,28 @@
 package com.budget.budgetTracker.service;
 
 import com.budget.budgetTracker.dto.TransactionRequestDTO;
-import com.budget.budgetTracker.entity.Budget;
-import com.budget.budgetTracker.entity.Transaction;
-import com.budget.budgetTracker.entity.TransactionType;
-import com.budget.budgetTracker.entity.User;
+import com.budget.budgetTracker.entity.*;
 import com.budget.budgetTracker.repository.BudgetRepository;
+import com.budget.budgetTracker.repository.OpenAISummaryRepository;
 import com.budget.budgetTracker.repository.TransactionRepository;
 import com.budget.budgetTracker.repository.UserRepository;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionService {
 
+    private final OpenAiChatModel chatClient;
+
+    private final OpenAISummaryRepository summaryRepo;
     private final TransactionRepository transactionRepo;
 
     private final BudgetRepository budgetRepo;
@@ -26,7 +31,9 @@ public class TransactionService {
     private final EmailService emailService;
 
     private final SpendingSummaryService summaryService;
-    public TransactionService(TransactionRepository transactionRepo, UserRepository userRepo, BudgetRepository budgetRepo, EmailService emailService, SpendingSummaryService summaryService) {
+    public TransactionService(OpenAiChatModel chatClient, OpenAISummaryRepository summaryRepo, TransactionRepository transactionRepo, UserRepository userRepo, BudgetRepository budgetRepo, EmailService emailService, SpendingSummaryService summaryService) {
+        this.chatClient = chatClient;
+        this.summaryRepo = summaryRepo;
         this.transactionRepo = transactionRepo;
         this.userRepo = userRepo;
         this.budgetRepo = budgetRepo;
@@ -38,11 +45,27 @@ public class TransactionService {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        String categories = Arrays.stream(CategoryType.values())
+                .map(Enum::name)
+                .collect(Collectors.joining(", "));
+
         Transaction transaction = new Transaction();
         transaction.setTitle(requestDTO.getTitle());
         transaction.setAmount(requestDTO.getAmount());
         transaction.setType(requestDTO.getType());
-        transaction.setCategory(requestDTO.getCategory());
+        StringBuilder prompt = new StringBuilder("You are an intelligent categorization model.\n");
+        prompt.append("Your task is to determine which category the following title best fits into.\n");
+        prompt.append("Choose *only one* from these categories: ").append(categories).append(".\n");
+        prompt.append("Title: ").append(requestDTO.getTitle()).append("\n");
+        prompt.append("Return only the category name (e.g., TRAVEL). No explanation.");
+
+
+        String generatedSummary = chatClient.call(new Prompt(prompt.toString()))
+                .getResult()
+                .getOutput()
+                .getText();
+        System.out.println("ChatGPT response: " + generatedSummary);
+        transaction.setCategory(generatedSummary);
         transaction.setUser(user);
 
         if(user.getTotalBalance() != null) {
