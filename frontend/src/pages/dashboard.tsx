@@ -90,6 +90,7 @@ const [isSidebarOpen, setSidebarOpen] = useState(false);
       }
       const response = await axios.get(`http://localhost:8081/transactions/${userId}`);
        let responseData = response.data;
+       console.log("Data for Transaction Total Amount: ", responseData)
       // for(let responses in responseData)
       // {
       //   responses.slice(-1)[0].;
@@ -97,13 +98,16 @@ const [isSidebarOpen, setSidebarOpen] = useState(false);
       // }
       // console.log("Last Object Response", responseData)
      // console.log("Tolal Transaction", responseData);
-     if(responseData >0)
+     if(responseData.length > 0)
      {
      const lastTransaction = responseData[responseData.length - 1];
+     console.log("Last Transaction: ",responseData[responseData.length - 1])
       setAmountLastTransaction(lastTransaction.amount ? lastTransaction.amount : 0);
-      setCategory(lastTransaction.type.toLowerCase());
+      setCategory(lastTransaction.category.toLowerCase());
      // setAmount(responseData); // Assuming it's just a number or formatted string
      }
+     console.log("Last Transaction Amount:", amountLastTransaction);
+     console.log("Category last transaction", category);
     } catch (err) {
       console.error("Failed to fetch total spent:", err);
     }

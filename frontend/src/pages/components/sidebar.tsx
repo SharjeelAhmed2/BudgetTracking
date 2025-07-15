@@ -39,11 +39,12 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
         <li><Link bg-className="bg-white p-6" to="/createTransaction">Add Transaction</Link></li>
 
         <li><Link bg-className="bg-white p-6" to="/createBudget">Add Budget</Link></li>
-        <li><Link bg-className="bg-white p-6" to="/tableTransaction">View All Transactions</Link></li>
+        <li><Link bg-className="bg-white p-6" to="/tableTransaction">View All Transactions</Link></li> 
+        <li><Link bg-className="bg-white p-6" to="/generateSummary">Generate Summary</Link></li>
+        <li><Link bg-className="bg-white p-6" to="/advisor">Financial Advice</Link></li>
         <li>        <button className="text-sm font-semibold text-red-600 hover:underline"
         onClick={handleLogout}
         >Logout</button></li>
-        <li><Link bg-className="bg-white p-6" to="/generateSummary">Generate Summary</Link></li>
       </ul>
     </div>
   );

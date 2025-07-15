@@ -6,6 +6,7 @@ import TableTransaction from './pages/components/tableTransaction';
 import CreateTransaction from './pages/components/createTransaction';
 import CreateBudget from './pages/components/createBudget';
 import GenerateSummary from './pages/components/generateSummary';
+import Advisor from './pages/components/advisor';
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/createTransaction" element={<CreateTransaction/>} />
         <Route path="/createBudget" element={<CreateBudget/>} />
         <Route path="/generateSummary" element={<GenerateSummary/>}/>
+        <Route path="/advisor" element={<Advisor/>}/>
       </Routes>
     </Router>
   );
